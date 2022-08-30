@@ -12,7 +12,7 @@ router.get('/:id', async (req, res) => {
 
   try {
     const repo = container.get(BookRepository);
-    const book = await repo.findById(id).select('-__v');
+    const book = repo.getBook(id);
 
     await MessageModel.find({ bookId: id }).select('-__v');
 
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
   try {
     const repo = container.get(BookRepository);
 
-    const books = await repo.find().select('-__v');
+    const books = repo.getBooks();
 
     res.json(books);
   } catch (e) {
@@ -57,7 +57,7 @@ router.post(
     
     const repo = container.get(BookRepository);
 
-    const newBook = new repo({
+    const newBook = repo.createBook({
       title,
       description,
       authors,
@@ -102,17 +102,15 @@ router.put(
     try {
       const repo = container.get(BookRepository);
 
-      await repo.findByIdAndUpdate(
-        { _id: id },
+      repo.updateBook(
+        id,
         {
-          $set: {
             title: title,
             desc: desc,
             authors: authors,
             favorite: favorite,
             fileCover: fileCover,
             fileName: fileName,
-          },
         }
       );
 
@@ -130,7 +128,7 @@ router.delete('/:id', async (req, res) => {
   try {
     const repo = container.get(BookRepository);
 
-    await repo.deleteOne({ _id: id });
+    repo.delete(id);
 
     res.json('ok');
   } catch (e) {

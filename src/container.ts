@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import {BookRepository} from '../TypeScript/app'
+import {BookRepository} from './Repository/app'
 
 export const container = new Container();
 
