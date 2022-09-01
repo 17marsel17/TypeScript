@@ -6,8 +6,8 @@ ARG NODE_ENV=production
 
 COPY package*.json ./
 RUN npm install
-COPY public ./public
-COPY views ./views
-COPY src ./src
+COPY logs ./logs
+COPY load ./load
+COPY dist ./dist
 
 CMD ["npm", "run", "start"]

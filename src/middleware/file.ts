@@ -9,7 +9,11 @@ export const storage = multer.diskStorage({
   },
 });
 
-export const fileFilter = (req, file, cb) => {
+export const fileFilter = (
+  req: any,
+  file: { fieldname: string; originalname: string },
+  cb: (arg0: any, arg1: boolean) => void
+) => {
   if (file.fieldname === "fileBook") {
     if (file.originalname.match(/\.(pdf|txt|doc|docx)$/)) {
       cb(null, true);
