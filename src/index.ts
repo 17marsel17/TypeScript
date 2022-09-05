@@ -7,7 +7,9 @@ import { error } from "./middleware/error";
 import mongoose from "mongoose";
 import * as path from "path";
 
-mongoose.connect(MONGO_URL);
+mongoose.connect(MONGO_URL).then(() => {
+  console.log(`Connected to ${MONGO_URL}`);
+});
 
 const app = express();
 
