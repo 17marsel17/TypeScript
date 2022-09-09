@@ -1,8 +1,18 @@
-export interface CreateBookDto {
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CreateBookDto {
+  @ApiProperty({ description: 'Название книги' })
   title: string;
+
+  @ApiProperty({ description: 'Описание' })
   description?: string;
+
+  @ApiProperty({ description: 'Авторы' })
   authors: string;
-  favorite?: string;
+
+  @ApiProperty({ description: 'Обложка' })
   fileCover?: string;
+
+  @ApiProperty({ description: 'Файл книги' })
   fileBook?: string;
 }
