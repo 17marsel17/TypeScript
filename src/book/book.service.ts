@@ -1,56 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
-import { Book } from './entities/book.entity';
+import { Book } from './interfaces/book.interface';
 import { v4 as uuid } from 'uuid';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { BookDocument, BookEntity } from './entities/book.entity';
+import { Connection, Model } from 'mongoose';
 
 @Injectable()
 export class BookService {
-  private readonly books: Book[] = [];
+  constructor(
+    @InjectModel(BookEntity.name) private bookModel: Model<BookDocument>,
+    @InjectConnection() private connection: Connection,
+  ) {}
 
   create(createBookDto: CreateBookDto) {
-    const newBook: Book = {
-      ...createBookDto,
-      id: uuid(),
-      description: createBookDto.description ?? '',
-      favorite: createBookDto.favorite ?? '',
-      fileBook: createBookDto.fileBook ?? '',
-      fileCover: createBookDto.fileCover ?? '',
-    };
-    this.books.push(newBook);
-    return newBook;
+    const newBook = new this.bookModel(createBookDto);
+
+    return newBook.save();
   }
 
   findAll() {
-    return this.books;
+    return this.bookModel.find().exec();
   }
 
   findOne(id: string) {
-    return this.books.find((el) => el.id === id);
+    return this.bookModel.findById(id);
   }
 
   update(id: string, createBookDto: CreateBookDto) {
-    const idx: number = this.books.findIndex((el) => el.id === id);
-
-    if (idx !== -1) {
-      this.books[idx] = {
-        ...this.books[idx],
-        title: createBookDto.title,
-        description: createBookDto.description,
-        authors: createBookDto.authors,
-        favorite: createBookDto.favorite,
-        fileCover: createBookDto.fileCover,
-        fileBook: createBookDto.fileBook,
-      };
-    }
-    return this.books[idx];
+    return this.bookModel.findByIdAndUpdate({ _id: id }, createBookDto);
   }
 
   remove(id: string) {
-    const idx = this.books.findIndex((el) => el.id === id);
-
-    if (idx !== -1) {
-      this.books.splice(idx, 1);
-    }
+    this.bookModel.findOneAndDelete({ _id: id });
     return `ok`;
   }
 }
