@@ -2,28 +2,17 @@ import { of, from, timer, range, Observable, observable } from "rxjs";
 import { map } from "rxjs/operators";
 import axios from "axios";
 
-const githubStream$ = new Observable((observer) => {
-  const source = axios.CancelToken.source();
-  axios
-    .get("https://api.github.com/search/repositories?q=$ndtnf-homeworks", {
-      cancelToken: source.token,
-    })
-    .then((response) => {
-      observer.next(response.data);
-      observer.complete();
-    })
-    .catch(function (thrown) {
-      if (!axios.isCancel(thrown)) {
-        observer.error(thrown);
-      }
-    });
+const githubStream$ = from(
+  axios.get("https://api.github.com/search/repositories?q=ndtnf-homeworks")
+).pipe(
+  map((response) => {
+    return response.data.items;
+  })
+);
 
-  return () => {
-    source.cancel("Cancelled");
-  };
-});
+const githubStream2$ = from(githubStream$);
 
-githubStream$.subscribe({
+githubStream2$.subscribe({
   next: console.log,
   error: console.log,
   complete: () => {
