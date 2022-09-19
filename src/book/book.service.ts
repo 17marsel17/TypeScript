@@ -29,8 +29,8 @@ export class BookService {
     return this.bookModel.findByIdAndUpdate({ _id: id }, createBookDto).exec();
   }
 
-  remove(id: string): string {
-    this.bookModel.findOneAndDelete({ _id: id });
+  async remove(id: string): Promise<string> {
+    await this.bookModel.findOneAndDelete({ _id: id }).exec();
     return `ok`;
   }
 }

@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, UsePipes } from '@nestjs/common';
 import { AppService } from './app.service';
+import { ParseIntPipe } from './common/pipes/parse-int.pipe';
 
 @Controller()
 export class AppController {
@@ -8,5 +9,13 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  @Get('/test/:number')
+  @UsePipes(ParseIntPipe)
+  async toNumber(
+    @Param('number', ParseIntPipe) numberFromString: number,
+  ): Promise<number> {
+    return numberFromString;
   }
 }
