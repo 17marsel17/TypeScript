@@ -2,13 +2,14 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   Post,
   Request,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
-import { UserSignInDto, UserSignUpDto } from './dto/user.dto';
+import { User, UserSignInDto, UserSignUpDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { JwtGuard } from '../auth/guard/jwt-guard';
 
@@ -20,14 +21,20 @@ export class UserController {
   ) {}
 
   @Post('/signup')
-  async signup(@Body() userSignUpDto: UserSignUpDto) {
-    const user = await this.userService.createNewUser(userSignUpDto);
+  async signup(@Body() userSignUpDto: UserSignUpDto): Promise<UserSignUpDto> {
+    const user = await this.userService.findOne(userSignUpDto.email);
 
-    return user;
+    if (user) {
+      throw new HttpException('user with this email already exists', 409);
+    }
+
+    return await this.userService.createNewUser(userSignUpDto);
   }
 
   @Post('/signin')
-  async signin(@Body() userSignInDto: UserSignInDto) {
+  async signin(
+    @Body() userSignInDto: UserSignInDto,
+  ): Promise<{ access_token: string }> {
     const user = await this.authService.validateUser(
       userSignInDto.email,
       userSignInDto.password,
@@ -42,7 +49,7 @@ export class UserController {
 
   @UseGuards(JwtGuard)
   @Get('/profile')
-  getProfile(@Request() req) {
+  getProfile(@Request() req): Promise<User> {
     console.log('req', req);
     return req.user;
   }

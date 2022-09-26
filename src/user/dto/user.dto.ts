@@ -9,3 +9,9 @@ export interface UserSignInDto {
   email: string;
   password: string;
 }
+
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+}
