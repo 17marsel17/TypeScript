@@ -17,7 +17,8 @@ export class BookCommentGateway {
 
   @SubscribeMessage('addComment')
   addComment(@MessageBody() messageData): Observable<any> {
-    return from(this.bookCommentService.create(messageData)).pipe(
+    const data = JSON.parse(messageData);
+    return from(this.bookCommentService.create(data)).pipe(
       map((res) => {
         return {
           event: 'addComment',
@@ -31,8 +32,9 @@ export class BookCommentGateway {
   }
 
   @SubscribeMessage('getAllComments')
-  getAllComments(@MessageBody('bookId') bookId: string): Observable<any> {
-    return from(this.bookCommentService.findAllBookComment(bookId)).pipe(
+  getAllComments(@MessageBody() messageData): Observable<any> {
+    const data = JSON.parse(messageData);
+    return from(this.bookCommentService.findAllBookComment(data.bookId)).pipe(
       map((res) => {
         return { event: 'getAllComments', data: res };
       }),
